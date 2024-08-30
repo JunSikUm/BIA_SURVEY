@@ -7,15 +7,109 @@
         window.dataLayer = window.dataLayer || [];
         function gtag(){dataLayer.push(arguments);}
         gtag('js', new Date());
-        gtag('config', 'G-J0FWDQTJ5Y');
+        gtag('config', 'G-J0FWDQTJ5Y'); // 기본 설정
+
+        // 고유 ID 생성 및 GA4에 user_id로 설정
+        function generateUUID() {
+            return 'xxxx-xxxx-4xxx-yxxx-xxxxxx'.replace(/[xy]/g, function(c) {
+                var r = Math.random() * 16 | 0, v = c == 'x' ? r : (r & 0x3 | 0x8);
+                return v.toString(16);
+            });
+        }
+
+        // 쿠키 또는 로컬 스토리지에서 고유 ID 가져오기 또는 생성
+        function getOrCreateUserID() {
+            let userID = localStorage.getItem('userID');
+            if (!userID) {
+                userID = generateUUID();
+                localStorage.setItem('userID', userID);
+            }
+            return userID;
+        }
+
+        // 사용자 고유 ID를 가져오기
+        const userID = getOrCreateUserID();
+
+        // 페이지 방문 이벤트 전송 (고유 ID 포함)
+        gtag('event', 'page_visit', {
+            'event_category': 'Page Interaction',
+            'event_label': 'Page Loaded',
+            'user_id': userID, // 사용자 고유 ID를 포함하여 전송
+            'non_interaction': true // 사용자가 직접 상호작용하지 않아도 기록
+        });
     </script>
     
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Document</title>
-    <a style="font: 12px Helvetica, sans-serif; color: #999; text-decoration: none;" href="https://ko.surveymonkey.com"> 나만의 사용자 의견 설문조사 만들기 </a>
+    <style>
+        .logo {
+            position: absolute;
+            top: 10px;
+            left: 10px;
+            z-index: 1001; /* z-index를 높게 설정하여 다른 요소 위에 표시 */
+        }
+        .footer-link {
+            position: fixed;
+            bottom: 50px; /* 위젯 하단 배너와 겹치지 않도록 위로 올림 */
+            right: 10px;
+            font: 12px Helvetica, sans-serif;
+            color: #999;
+            text-decoration: none;
+            z-index: 1001; /* z-index를 높게 설정하여 다른 요소 위에 표시 */
+        }
+        .watermark {
+            position: absolute;
+            font-size: 24px;
+            color: rgba(0, 0, 0, 0.02); /* 더 연한 반투명 검은색 */
+            pointer-events: none; /* 클릭 방지 */
+            z-index: 9999; /* 가장 위에 표시 */
+            white-space: nowrap;
+        }
+        body {
+            position: relative;
+            overflow: hidden; /* 스크롤 방지 */
+        }
+    </style>
 </head>
 <body>
+    <!-- 회사 로고 -->
+    <a href="https://ptbia.co.id/" class="logo">
+        <img src="https://i.ibb.co/GRdDDQ1/Kakao-Talk-20240826-150648709.jpg" alt="Company Logo" width="100">
+    </a>
+
+    <!-- 페이지 하단의 SurveyMonkey 링크 -->
+    <a class="footer-link" href="https://ko.surveymonkey.com">나만의 사용자 의견 설문조사 만들기</a>
+
+    <!-- 워터마크 반복 표시 -->
+    <script>
+        // 워터마크 요소를 생성하는 함수
+        function createWatermark(text, x, y) {
+            const watermark = document.createElement('div');
+            watermark.className = 'watermark';
+            watermark.innerText = text;
+            watermark.style.top = y + 'px';
+            watermark.style.left = x + 'px';
+            document.body.appendChild(watermark);
+        }
+
+        // 화면에 반복적으로 워터마크 생성
+        function generateWatermarks() {
+            const screenWidth = window.innerWidth;
+            const screenHeight = window.innerHeight;
+            const gap = 150; // 워터마크 간격 조정
+
+            for (let y = 0; y < screenHeight; y += gap) {
+                for (let x = 0; x < screenWidth; x += gap) {
+                    createWatermark(userID, x, y);  // userID 변수를 여기서 사용
+                }
+            }
+        }
+
+        // 워터마크 표시
+        generateWatermarks();
+    </script>
+
     <!-- SurveyMonkey Script placed at the end of the body -->
     <script>
         (function(t, e, s, n) {
